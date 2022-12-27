@@ -1,0 +1,85 @@
+---
+version: '3'
+services:
+  zookeeper-1:
+    image: confluentinc/cp-zookeeper:7.3.1
+    hostname: zookeeper-1
+    container_name: zookeeper-1
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_SERVERS: 'zookeeper-1:2888:3888'
+    volumes:
+      - ./data/zookeeper-1/data:/var/lib/zookeeper/data
+      - ./data/zookeeper-1/datalog:/var/lib/zookeeper/log
+    networks:
+      kafka-network:  
+        ipv4_address: 10.6.0.11
+
+  broker-1:
+    image: confluentinc/cp-kafka:7.3.1
+    hostname: broker-1
+    container_name: broker-1
+    depends_on:
+      - zookeeper-1
+    ports:
+      - "9091:9091" # for localhost connection
+      - "9101:9101"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper-1:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker-1:29092,PLAINTEXT_HOST://localhost:9091
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      # KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      # KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 1000
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/kafka/connect-log4j.properties"
+    volumes:
+      - ./data/broker-1/data:/var/lib/kafka/data
+    networks:
+      kafka-network:
+        ipv4_address: 10.6.0.4
+
+ 
+
+  # kafdrop:
+  #   container_name: kafdrop
+  #   image: obsidiandynamics/kafdrop
+  #   ports:
+  #     - "9000:9000"
+  #   environment:
+  #     KAFKA_BROKERCONNECT: "broker-1:29092"
+  #     JVM_OPTS: "-Xms16M -Xmx48M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
+  #   depends_on:
+  #     - broker-1
+  #   networks:
+  #     kafka-network:
+  #       ipv4_address: 10.6.0.61
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    container_name: kafka-ui
+    ports:
+      - "8080:8080"
+    restart: always
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=kafka
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=broker-1:29092
+      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper-1:2181
+    depends_on:
+      - broker-1
+    networks:
+      kafka-network:
+        ipv4_address: 10.6.0.51
+networks:
+  kafka-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.6.0.0/16
