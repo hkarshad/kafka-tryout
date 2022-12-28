@@ -24,7 +24,7 @@ services:
       KAFKA_JMX_HOSTNAME: localhost
       KAFKA_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/kafka/connect-log4j.properties"
     volumes:
-      - ./data/kraft/broker-1/data:/tmp/kraft-combined-logs
+      - ./data/kraft/broker-1/data:/var/lib/kafka/data
       - ./kraft/update_run.sh:/tmp/update_run.sh
     env_file:
       - ./kraft/env
@@ -56,7 +56,7 @@ services:
       KAFKA_JMX_HOSTNAME: localhost
       KAFKA_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/kafka/connect-log4j.properties"
     volumes:
-      - ./data/kraft/broker-2/data:/tmp/kraft-combined-logs
+      - ./data/kraft/broker-2/data:/var/lib/kafka/data
       - ./kraft/update_run.sh:/tmp/update_run.sh
     env_file:
       - ./kraft/env
@@ -88,7 +88,7 @@ services:
       KAFKA_JMX_HOSTNAME: localhost
       KAFKA_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/kafka/connect-log4j.properties"
     volumes:
-      - ./data/kraft/broker-3/data:/tmp/kraft-combined-logs
+      - ./data/kraft/broker-3/data:/var/lib/kafka/data
       - ./kraft/update_run.sh:/tmp/update_run.sh
     env_file:
       - ./kraft/env
