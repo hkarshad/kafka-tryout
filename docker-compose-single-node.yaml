@@ -13,8 +13,8 @@ services:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_SERVERS: 'zookeeper-1:2888:3888'
     volumes:
-      - ./data/zookeeper-1/data:/var/lib/zookeeper/data
-      - ./data/zookeeper-1/datalog:/var/lib/zookeeper/log
+      - ./data/single-node/zookeeper-1/data:/var/lib/zookeeper/data
+      - ./data/single-node/zookeeper-1/datalog:/var/lib/zookeeper/log
     networks:
       kafka-network:  
         ipv4_address: 10.6.0.11
@@ -41,7 +41,7 @@ services:
       KAFKA_JMX_HOSTNAME: localhost
       KAFKA_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/kafka/connect-log4j.properties"
     volumes:
-      - ./data/broker-1/data:/var/lib/kafka/data
+      - ./data/single-node/broker-1/data:/var/lib/kafka/data
     networks:
       kafka-network:
         ipv4_address: 10.6.0.4
