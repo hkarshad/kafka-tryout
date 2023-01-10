@@ -18,6 +18,9 @@ Repo to understand features and configurations of kafka via docker compose.
 
 > docker compose -f "docker-compose-single-node.yaml" up -d --build
 
+> # command to be run before starting kafka in kraft mode(any docker compose files without zookeeper)
+> .\<kraft|mm2>\generate_env.bat
+
 # Test
 
 ## Commands
