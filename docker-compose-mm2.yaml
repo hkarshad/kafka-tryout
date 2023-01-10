@@ -1,0 +1,258 @@
+---
+version: "3"
+services:
+  broker-s1:
+    image: confluentinc/cp-kafka:7.3.1
+    hostname: broker-s1
+    container_name: broker-s1
+    ports:
+      - "9091:9091" # for localhost connection
+      - "9101:9101"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: "controller,broker"
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker-s1:29092,PLAINTEXT_HOST://localhost:9091
+      KAFKA_LISTENERS: PLAINTEXT://broker-s1:29092,PLAINTEXT_HOST://localhost:9091,CONTROLLER://broker-s1:29093
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@broker-s1:29093,2@broker-s2:29093,3@broker-s3:29093"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 2
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 1000
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/kafka/connect-log4j.properties"
+    volumes:
+      - ./data/mm2/broker-s1/data:/var/lib/kafka/data
+      - ./kraft/update_run.sh:/tmp/update_run.sh
+    env_file:
+      - ./mm2/env-s
+    command: "bash -c '/tmp/update_run.sh && /etc/confluent/docker/run'"
+    networks:
+      kafka-network:
+        ipv4_address: 10.6.0.4
+
+  broker-s2:
+    image: confluentinc/cp-kafka:7.3.1
+    hostname: broker-s2
+    container_name: broker-s2
+    ports:
+      - "9092:9092" # for localhost connection
+      - "9102:9101"
+    environment:
+      KAFKA_NODE_ID: 2
+      KAFKA_PROCESS_ROLES: "controller,broker"
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker-s2:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENERS: PLAINTEXT://broker-s2:29092,PLAINTEXT_HOST://localhost:9092,CONTROLLER://broker-s2:29093
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@broker-s1:29093,2@broker-s2:29093,3@broker-s3:29093"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 2
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 1000
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/kafka/connect-log4j.properties"
+    volumes:
+      - ./data/mm2/broker-s2/data:/var/lib/kafka/data
+      - ./kraft/update_run.sh:/tmp/update_run.sh
+    env_file:
+      - ./mm2/env-s
+    command: "bash -c '/tmp/update_run.sh && /etc/confluent/docker/run'"
+    networks:
+      kafka-network:
+        ipv4_address: 10.6.0.5
+
+  broker-s3:
+    image: confluentinc/cp-kafka:7.3.1
+    hostname: broker-s3
+    container_name: broker-s3
+    ports:
+      - "9093:9093" # for localhost connection
+      - "9103:9101"
+    environment:
+      KAFKA_NODE_ID: 3
+      KAFKA_PROCESS_ROLES: "controller,broker"
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker-s3:29092,PLAINTEXT_HOST://localhost:9093
+      KAFKA_LISTENERS: PLAINTEXT://broker-s3:29092,PLAINTEXT_HOST://localhost:9093,CONTROLLER://broker-s3:29093
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@broker-s1:29093,2@broker-s2:29093,3@broker-s3:29093"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 2
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 1000
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/kafka/connect-log4j.properties"
+    volumes:
+      - ./data/mm2/broker-s3/data:/var/lib/kafka/data
+      - ./kraft/update_run.sh:/tmp/update_run.sh
+    env_file:
+      - ./mm2/env-s
+    command: "bash -c '/tmp/update_run.sh && /etc/confluent/docker/run'"
+    networks:
+      kafka-network:
+        ipv4_address: 10.6.0.6
+
+  broker-d1:
+    image: confluentinc/cp-kafka:7.3.1
+    hostname: broker-d1
+    container_name: broker-d1
+    ports:
+      - "9191:9191" # for localhost connection
+      - "9201:9201"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: "controller,broker"
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker-d1:29092,PLAINTEXT_HOST://localhost:9191
+      KAFKA_LISTENERS: PLAINTEXT://broker-d1:29092,PLAINTEXT_HOST://localhost:9191,CONTROLLER://broker-d1:29093
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@broker-d1:29093,2@broker-d2:29093,3@broker-d3:29093"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 2
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 1000
+      KAFKA_JMX_PORT: 9201
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/kafka/connect-log4j.properties"
+    volumes:
+      - ./data/mm2/broker-d1/data:/var/lib/kafka/data
+      - ./kraft/update_run.sh:/tmp/update_run.sh
+    env_file:
+      - ./mm2/env-d
+    command: "bash -c '/tmp/update_run.sh && /etc/confluent/docker/run'"
+    networks:
+      kafka-network:
+        ipv4_address: 10.6.0.24
+
+  broker-d2:
+    image: confluentinc/cp-kafka:7.3.1
+    hostname: broker-d2
+    container_name: broker-d2
+    ports:
+      - "9192:9192" # for localhost connection
+      - "9202:9202"
+    environment:
+      KAFKA_NODE_ID: 2
+      KAFKA_PROCESS_ROLES: "controller,broker"
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker-d2:29092,PLAINTEXT_HOST://localhost:9192
+      KAFKA_LISTENERS: PLAINTEXT://broker-d2:29092,PLAINTEXT_HOST://localhost:9192,CONTROLLER://broker-d2:29093
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@broker-d1:29093,2@broker-d2:29093,3@broker-d3:29093"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 2
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 1000
+      KAFKA_JMX_PORT: 9202
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/kafka/connect-log4j.properties"
+    volumes:
+      - ./data/mm2/broker-d2/data:/var/lib/kafka/data
+      - ./kraft/update_run.sh:/tmp/update_run.sh
+    env_file:
+      - ./mm2/env-d
+    command: "bash -c '/tmp/update_run.sh && /etc/confluent/docker/run'"
+    networks:
+      kafka-network:
+        ipv4_address: 10.6.0.25
+
+  broker-d3:
+    image: confluentinc/cp-kafka:7.3.1
+    hostname: broker-d3
+    container_name: broker-d3
+    ports:
+      - "9193:9193" # for localhost connection
+      - "9203:9203"
+    environment:
+      KAFKA_NODE_ID: 3
+      KAFKA_PROCESS_ROLES: "controller,broker"
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker-d3:29092,PLAINTEXT_HOST://localhost:9193
+      KAFKA_LISTENERS: PLAINTEXT://broker-d3:29092,PLAINTEXT_HOST://localhost:9193,CONTROLLER://broker-d3:29093
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@broker-d1:29093,2@broker-d2:29093,3@broker-d3:29093"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 2
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 1000
+      KAFKA_JMX_PORT: 9203
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/kafka/connect-log4j.properties"
+    volumes:
+      - ./data/mm2/broker-d3/data:/var/lib/kafka/data
+      - ./kraft/update_run.sh:/tmp/update_run.sh
+    env_file:
+      - ./mm2/env-d
+    command: "bash -c '/tmp/update_run.sh && /etc/confluent/docker/run'"
+    networks:
+      kafka-network:
+        ipv4_address: 10.6.0.26
+
+  mirror-maker:
+    image: confluentinc/cp-kafka:7.3.1
+    hostname: mirror-maker
+    container_name: mirror-maker
+    environment:
+      KAFKA_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/kafka/connect-log4j.properties"
+    volumes:
+      - ./mm2/mm2.properties:/etc/mm2.properties
+    command: bash -c "cub kafka-ready -b broker-s1:29092 3 30 && cub kafka-ready -b broker-d1:29092 3 30 && connect-mirror-maker /etc/mm2.properties"
+    depends_on:
+      - broker-s1
+      - broker-s2
+      - broker-s3
+      - broker-d1
+      - broker-d2
+      - broker-d3
+    networks:
+      kafka-network:
+        ipv4_address: 10.6.0.31
+
+  # kafdrop:
+  #   container_name: kafdrop
+  #   image: obsidiandynamics/kafdrop
+  #   ports:
+  #     - "9000:9000"
+  #   environment:
+  #     KAFKA_BROKERCONNECT: "broker-s1:29092,broker-s2:29092,broker-s3:29092"
+  #     JVM_OPTS: "-Xms16M -Xmx48M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
+  #   depends_on:
+  #     - broker-s1
+  #     - broker-s2
+  #     - broker-s3
+  #   networks:
+  #     kafka-network:
+  #       ipv4_address: 10.6.0.52
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    container_name: kafka-ui
+    ports:
+      - "8080:8080"
+    restart: always
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=source
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=broker-s1:29092,broker-s2:29092,broker-s3:29092
+      - KAFKA_CLUSTERS_1_NAME=destination
+      - KAFKA_CLUSTERS_1_BOOTSTRAPSERVERS=brokerds1:29092,broker-d2:29092,broker-d3:29092
+    depends_on:
+      - broker-s1
+      - broker-s2
+      - broker-s3
+      - broker-d1
+      - broker-d2
+      - broker-d3
+    networks:
+      kafka-network:
+        ipv4_address: 10.6.0.51
+networks:
+  kafka-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.6.0.0/16
